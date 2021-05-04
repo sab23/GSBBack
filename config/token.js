@@ -1,16 +1,17 @@
-var jwt = require('jsonwebtoken')
+var jsonwebtoken = require('jsonwebtoken') 
 
-const createAccessToken = (user) => {
+const createAccessToken = (user) => { // creation d'un token
     return new Promise((resolve, reject) => {
-        if(user.id === undefined) reject('credentials not valid')
-        else{
+        if(user.id === undefined) reject({error:'Invalid Credentials'})
+    else{
             const signedUser = {
-                login: user.login,
+                email: user.login,
                 id: user.id
             }
-            jwt.sign(signedUser, "ppe", {expiresIn: '1d'}, (error, token) => {
+
+            jsonwebtoken.sign(signedUser,"ppe", {expiresIn: '1d'}, (error, token) => {
                 if(error) reject(error)
-                else resolve(token)
+                resolve(token)
             })
         }
     })
