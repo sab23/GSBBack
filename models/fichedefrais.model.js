@@ -1,92 +1,111 @@
-const connection = require('../config/db')  // IMPORTE CONNEXION
+const connection = require('../config/db')
 
+const search = (id,mois, callback) => {
+    
+    connection.query('SELECT * FROM fichefrais WHERE idutilisateur =(?) AND mois=(?)', [id, mois], callback)
+    
+}
+const searchAll = (id, callback) => {
+    
+    
+    connection.query('SELECT * FROM fichefrais WHERE idutilisateur = (?)', id, callback)
+    
+}
+const searchFraisForfait = (callback) => {
+    
+    connection.query('SELECT * FROM fraisforfait', callback)
+    
+}
 
-const addFiche = (fiche, callback) => {
+const searchLigneFraisForfait = (id,mois,callback) => {
+    connection.query('SELECT quantite FROM lignefraisforfait WHERE idutilisateur = (?) AND mois=(?)',[id, mois], callback)
+}
+const searchLigneFraisHorsForfait = (id,mois,callback) => {
+    connection.query('SELECT id, libelle, date, montant FROM lignefraishorsforfait WHERE idutilisateur = (?) AND mois=(?)', [id,mois], callback)
+}
+
+// Fonction Fiche Frais 
+
+const addFiche = (fiches, callback) => {
     
     var query =  'INSERT INTO fichefrais (idutilisateur, mois, nbJustificatifs, montantValide, dateModif, idEtat) VALUES (?)'
-    var values = [fiche.idutilisateur, fiche.mois, fiche.nbJustificatifs, fiche.montantValide, fiche.dateModif, fiche.idEtat]
+    var values = [fiches.idutilisateur, fiches.mois, fiches.nbJustificatifs, fiches.montantValide, fiches.dateModif, fiches.idEtat]
     connection.query(query, [values], callback)
     
 }
-const addLigne = (ligne, callback) => {
-    var query = 'INSERT INTO lignefraisforfait (idutilisateur, mois, idFraisForfait, quantite) VALUES (?)'
-    var values = [ligne.idutilisateur, ligne.mois, ligne.idFraisForfait, ligne.quantite]
-    connection.query(query, [values], callback)
-}
 
-const addLigneHorsForfait = (ligne, callback) => {
-    var query = 'INSERT INTO lignefraishorsforfait (idutilisateur, mois, libelle, date, montant) VALUES (?)'
-    var values = [ligne.idutilisateur, ligne.mois, ligne.libelle, ligne.date, ligne.montant]
-    connection.query(query, [values], callback)
-}
-
-
-const updateFiche = (idutilisateur, mois, fiche, callback) => {
+const updateFiche = (id,mois,fiches, callback) => {
+    var values = [fiches.nbJustificatifs, fiches.montantValide, fiches.dateModif, fiches.idEtat, id , mois]
     
-    var query =  'UPDATE fichefrais SET nbJustificatifs=(?), montantValide=(?), dateModif=(?), idEtat=(?) WHERE idutilisateur= (?) AND mois= (?)'
-    var values = [fiche.nbJustificatifs, fiche.montantValide, fiche.dateModif, fiche.idEtat, idutilisateur, mois]
-    connection.query(query, values, callback)
+    connection.query("UPDATE fichefrais SET nbJustificatifs = (?), montantValide = (?), dateModif = (?), idEtat = (?) WHERE idutilisateur = (?) AND mois = (?)",values, callback )
+    
     
 }
 
-const updateLigne = (idutilisateur, fiche, callback) => {
+// Fonction Ligne Frais Forfait
+const addLigneFraisForfait = (ligneFraisForfait, callback) => {
+    var values = [ligneFraisForfait.idutilisateur,ligneFraisForfait.mois,ligneFraisForfait.idFraisForfait,ligneFraisForfait.quantite]
     
-    var query = 'UPDATE lignefraisforfait SET mois=(?), idFraisForfait=(?), quantite=(?) WHERE idutilisateur= (?)'
-    var values = [ligne.idutilisateur, ligne.mois, ligne.idFraisForfait, ligne.quantite]
-    connection.query(query, values, callback)
+    connection.query("INSERT INTO lignefraisforfait (idutilisateur, mois, idFraisForfait, quantite) VALUES (?)", [values], callback)
     
+
 }
 
-const updateLigneHorsForfait = (idutilisateur, mois, fiche, callback) => {
+const updateLigneFraisForfait = (id, mois, idFraisForfait,ligneFraisForfait, callback) => {
+    var values = [ligneFraisForfait.quantite, id, mois, idFraisForfait]
+    console.log(values)
     
-    var query = 'UPDATE lignefraishorsforfait SET mois=(?), idFraisForfait=(?), libelle=(?), montant=(?) WHERE idutilisateur= (?)'
-    var values = [ligne.idutilisateur, ligne.mois, ligne.idFraisForfait, ligne.quantite]
-    connection.query(query, values, callback)
+    connection.query("UPDATE lignefraisforfait SET quantite = (?) WHERE idutilisateur= (?) AND mois = (?) AND idFraisForfait = (?)", values, callback)
     
+
 }
 
-const deleteFiche = (idutilisateur, mois, callback) => {
+const deleteLigneFraisForfait = (id, mois, idFraisForfait, callback) => {
+    var values = [id, mois, idFraisForfait]
     
-    var query1 =  'DELETE FROM fichefrais WHERE idutilisateur= (?) AND mois= (?)'
-    connection.query(query1, idutilisateur, mois, callback)
-   
+    connection.query('DELETE FROM lignefraisforfait WHERE idutilisateur=(?) AND mois=(?) AND idFraisForfait = (?)', values , callback)
+    
+
 }
 
-const deleteLigne = (idutilisateur, mois, callback) => {
+//fonction ligne hors forfait
+
+// Ajoutez une colonne Justificatif ?
+const addLigneFraisHorsForfait = (ligneFraisHorsForfait, callback) => {
+    var values = [ligneFraisHorsForfait.idutilisateur,ligneFraisHorsForfait.mois,ligneFraisHorsForfait.libelle,ligneFraisHorsForfait.date, ligneFraisHorsForfait.montant]
     
-    var query1 =  'DELETE FROM lignefraisforfait WHERE idutilisateur= (?)'
-    connection.query(query1, idutilisateur, callback)
+    connection.query("INSERT INTO lignefraishorsforfait (idutilisateur, mois, libelle, date, montant) VALUES (?)", [values], callback)
+    
+
+}
+const updateLigneFraisHorsForfait = ( ligneFraisHorsForfait, id, callback) => {
+    var values = [ligneFraisHorsForfait.libelle,ligneFraisHorsForfait.date,ligneFraisHorsForfait.montant, id]
+    
+    connection.query("UPDATE lignefraishorsforfait SET libelle =(?), date=(?), montant=(?) WHERE id = (?)", values, callback)
+    
+
 }
 
-const deleteLigneHorsForfait = (idutilisateur, callback) => {
+const deleteLigneFraisHorsForfait = (id, callback) => {
     
-    var query1 =  'DELETE FROM lignefraishorsforfait WHERE idutilisateur= (?)'
-    connection.query(query1, idutilisateur, callback)
-}
+    connection.query('DELETE FROM lignefraishorsforfait WHERE  id = (?)', id , callback)
+    
 
-const search = (idutilisateur, mois, callback) => {       // PREND EN PARAMETRE UN CALL BACK 
-    
-        // CONNEXION A LA BDD
-    connection.query('SELECT * FROM fichefrais WHERE idutilisateur= (?) AND mois= (?)', [idutilisateur, mois], callback)
-       // FERMETURE CONNEXION A LA BDD
-}
-
-const searchAll = (callback) => {       // PREND EN PARAMETRE UN CALL BACK 
-    
-      // CONNEXION A LA BDD
-    connection.query('SELECT * FROM fichefrais', callback)
-       // FERMETURE CONNEXION A LA BDD
 }
 
 module.exports = {
     search,
     searchAll,
+    searchFraisForfait,
+    searchLigneFraisForfait,
+    searchLigneFraisHorsForfait,
     addFiche,
-    addLigne,
-    addLigneHorsForfait,
+    addLigneFraisForfait,
+    addLigneFraisHorsForfait,
+    updateLigneFraisForfait,
+    updateLigneFraisHorsForfait,
     updateFiche,
-    updateLigne,
-    updateLigneHorsForfait,
-    deleteFiche,
-    deleteLigneHorsForfait
+    deleteLigneFraisForfait,
+    deleteLigneFraisHorsForfait
+    
 }

@@ -1,27 +1,30 @@
-const express = require('express')
+const { response } = require("express")
+const express = require("express")
 const ficheController = require('../controllers/fichedefrais.controller') // LES 2 .. PERMETTENT DE SORTIR DU DOSSIER
 let router = express()
 
-
-// AFFICHAGE
+router.get('/lignefraisforfait/:id/:mois', ficheController.searchLigneFraisForfait)
+router.get('/lignefraishorsforfait/:id/:mois', ficheController.searchLigneFraisHorsForfait)
+router.get('/:id', ficheController.searchAll)
+router.get('/fraisforfait', ficheController.searchFraisForfait) 
 router.get('/:id/:mois', ficheController.search)
-router.get('/all', ficheController.searchAll)
 
-// CREATION 
-router.post('/', ficheController.addFiche)
-router.post ('/addl', ficheController.addLigne)
-router.post ('/addlhors', ficheController.addLigneHorsForfait)
+//Créer une donnée
+router.post('/new', ficheController.addFiche)
 
-// MODIFICATION
-router.put('/:id/:mois', ficheController.updateFiche)
-router.put('/:id/ligne', ficheController.updateLigne)
-router.put('/:id/lignehors', ficheController.updateLigneHorsForfait)
+router.post ('/lignefraisforfait/new', ficheController.addLigneFraisForfait)
+router.post ('/lignefraishorsforfait/new', ficheController.addLigneFraisHorsForfait)
 
-// SUPPRESSION
-router.delete('/delete/:id/:mois', ficheController.deleteFiche)
-router.delete('/delete/:id/:mois/ligne', ficheController.deleteLigne)
-router.delete('/delete/:id/:mois/lignehors', ficheController.deleteLigneHorsForfait)
+// Modifier BDD
+//router.put('/:id/:mois', ficheController.updateFiche)
+
+router.put('/lignefraisforfait/:id/:mois/:idFraisForfait', ficheController.updateLigneFraisForfait)
+router.put('/lignefraishorsforfait/:id', ficheController.updateLigneFraisHorsForfait)
+//Supprimer données
+router.delete('/lignefraisforfait/delete/:id/:mois/:idFraisForfait', ficheController.updateFiche)
+router.delete('/lignefraishorsforfait/delete/:id/', ficheController.deleteLigneFraisHorsForfait)
 
 
-// EXPORT DU ROUTEUR POUR POUVOIR L APPELER DS INDEX.JS ET LE LIER A UNE URL
+
 module.exports = router
+

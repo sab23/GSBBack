@@ -1,49 +1,37 @@
-const connection = require('../config/db')  // IMPORTE CONNEXION
-
-
-const addUser = (user, callback) => {
-    connection.connect()
-    // DECLARATION ET INSTANCIATION
-    var query =  'INSERT INTO utilisateur (id, nom, prenom, login, mdp, adresse, cp, ville, dateEmbauche, role ) VALUES (?)'
-    var values = [user.id, user.nom, user.prenom, user.login, user.mdp, user.adresse, user.cp, user.ville, user.dateEmbauche, user.role ]
-    // EXECUTION DE LA REQUETE
-    connection.query(query, [values], callback)
-    
-}
+const connection = require('../config/db')
 
 const searchByLogin = (login, callback) => {
     connection.query('SELECT * from utilisateur WHERE login = (?)', login, callback)
-}
 
-const updateUser = (id, user, callback) => {
-    connection.connect()
-    var query =  'UPDATE utilisateur SET nom=(?), prenom=(?), login=(?), mdp=(?), adresse=(?), cp=(?), ville=(?), dateEmbauche=(?), role=(?) WHERE id= (?)'
-    var values = [user.nom, user.prenom, user.login, user.mdp, user.adresse, user.cp, user.ville, user.dateEmbauche, user.role, id]
-    connection.query(query, values, callback)
-    
 }
-const deleteUser = (id, callback) => {
-    connection.connect()
-    var query1 =  'DELETE FROM utilisateur WHERE id= (?)'
-    connection.query(query1, id, callback)
+const searchAll = (login,callback) => {
+    
+    
+    connection.query('SELECT * FROM utilisateur WHERE login=(?)',login, callback)
     
 }
 
-
-/* AJOUT UTILISATEUR EN BRUT
-const addUser = (callback) => {
+const addUser = (user, callback) => {
     connection.connect()
     var query =  'INSERT INTO utilisateur (id, nom, prenom, login, mdp, adresse, cp, ville, dateEmbauche, role ) VALUES (?)'
-    var values = ['test', 'test', 'test', 'test', 'test', 'test', '69000', 'test', '2020-12-12', 'test']
+    var values = [user.id,user.nom, user.prenom, user.login, user.mdp, user.adresse, user.cp, user.ville, user.dateEmbauche, user.role]
     connection.query(query, [values], callback)
     connection.end()
 }
-*/
-const searchAll = (callback) => {       // PREND EN PARAMETRE UN CALL BACK 
-    
-    connection.connect()    // CONNEXION A LA BDD
-    connection.query('SELECT * from utilisateur', (callback))
-      // FERMETURE CONNEXION A LA BDD
+
+const updateUser = (id,user, callback) => {
+    var values = [user.nom, user.prenom, user.login, user.mdp, user.adresse, user.cp, user.ville, user.dateEmbauche, user.role, id]
+    connection.connect()
+    connection.query("UPDATE utilisateur SET nom=(?), prenom=(?), login=(?), mdp=(?), adresse=(?), cp=(?), ville=(?), dateEmbauche=(?), role=(?) WHERE id= (?)",values, callback )
+    connection.end()
+
+}
+
+const deleteUser = (id,callback) => {
+    connection.connect()
+    connection.query('DELETE FROM utilisateur WHERE id=(?)', id , callback)
+    connection.end()
+
 }
 
 module.exports = {
@@ -53,9 +41,3 @@ module.exports = {
     deleteUser,
     searchByLogin
 }
-
-/* 
-INSERER UN UTILISATEUR SAISIR UTILISATEUR
-model controller routeur
-ajouter supprimer modifier
-*/

@@ -1,19 +1,11 @@
+const { response } = require("express")
 const express = require('express')
-const userController = require('../controllers/users.controller') // LES 2 .. PERMETTENT DE SORTIR DU DOSSIER
+const userController = require('../controllers/users.controller')
 let router = express()
 
 
-// AFFICHAGE - RECUPERER DONNEES BDD
-
-router.get('/', userController.searchAll)
-
-router.put('/:id', userController.updateUser)
-
-router.delete('/delete/:id', userController.deleteUser)
-
-
-// AFFICHE LISTE DES USERS    response.json({users: dbUser})          localhost:3000/users
-
+//Recupération données
+router.post('/auth', userController.searchAll)
 
 router.get('/:id', (request, response) => {
     const id = request.params.id
@@ -21,24 +13,13 @@ router.get('/:id', (request, response) => {
     response.json(result)
 })
 
-// CREATION - INSERTION BDD
-router.post('/', userController.addUser)
+//Créer une donnée
+router.post('/new', userController.addUser)
+// Modifier BDD
+router.put('/:id', userController.updateUser)
 
-// MODIFICATION BDD 
-/*
-router.put('/', (request, response) => {
-    let body = request.body
-    const user = userController.modify(body)
-    response.json(user)
-})*/
 
-// SUPPRESSION BDD
-/*
-router.delete('/', (request, response) => {
-    let body = request.body
-    const user = userController.remove(body)
-    response.json(user)
-})*/
+//Supprimer données
+router.delete('/delete/:id',userController.deleteUser)
 
-// EXPORT DU ROUTEUR POUR POUVOIR L APPELER DS INDEX.JS ET LE LIER A UNE URL
 module.exports = router
